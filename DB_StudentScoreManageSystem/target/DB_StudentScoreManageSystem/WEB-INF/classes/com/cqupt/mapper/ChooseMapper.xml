@@ -1,0 +1,80 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://www.mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.cqupt.mapper.ChooseMapper">
+
+    <!--通过学生学号，查询学生的选课 -->
+    <select id="queryChooseCourseById" parameterType="string" resultType="choose">
+        select
+        c.stu_id as stuId,s.name as name,co.name as course,t.name as teacher ,c.score as score,c.class_id as classId,c.feedback as feedback
+        from choose c,student s,teacher t,course co,classes cl
+        where
+        c.stu_id = s.id
+        and c.class_id = cl.id
+        and  cl.course_id = co.id
+        and cl.teacher_id = t.id
+        and c.stu_id = #{id}
+    </select>
+
+    <!-- 通过教学班号查询选课人数-->
+    <select id="getChooseNumByClassId" parameterType="string" resultType="integer">
+        select count(*) as num  FROM choose where class_id = #{classId}
+    </select>
+
+    <!--通过教学班号查询选择了该教学班的学生-->
+    <select id="getSeeStudentByClassId" parameterType="string" resultType="seeStudent">
+        select
+        c.stu_id as id,s.name as name,co.name as course ,c.score as score, c.feedback as feedback
+        from choose c,student s,classes cl,course co
+        where
+        c.stu_id = s.id and c.class_id = cl.id and cl.course_id = co.id and c.class_id=#{classId}
+    </select>
+
+    <!--更新学生成绩-->
+    <update id="updateScore" parameterType="updateScore">
+        update choose set score = #{score} where stu_id = #{stuId} and class_id = #{classId}
+    </update>
+
+    <!--通过学号获取该学生选择的所有教学班及其信息-->
+    <select id="getAdminClass2ByStudent" resultType="adminClass2">
+        select
+        c.class_id as classId,co.name as course,t.name as teacher,c.score as score
+        from
+        choose c,course co,teacher t,classes cl
+        where
+        c.stu_id = #{stuId} and c.class_id = cl.id and cl.course_id = co.id and cl.teacher_id = t.id
+    </select>
+
+    <!--通过关键词（如姓名或学号）获取学生信息-->
+    <select id="getStudentByKeyWord" parameterType="map" resultType="seeStudent">
+        select
+        c.stu_id as id,s.name as name,co.name as course ,c.score as score
+        from choose c,student s,classes cl,course co
+        where
+        c.stu_id = s.id and c.class_id = cl.id and cl.course_id = co.id and c.class_id=#{classId}
+        and (c.stu_id = #{keyWord} or s.name like concat('%',#{keyWord},'%'))
+    </select>
+
+    <!--添加学生选课-->
+    <insert id="addChoose" parameterType="choose">
+        insert into choose(stu_id,class_id) values(#{stuId},#{course})
+    </insert>
+
+    <!--删除学生选课-->
+    <delete id="deleteChoose" parameterType="course">
+        delete from choose where stu_id = #{stuId} and class_id = #{course}
+    </delete>
+
+    <!--修改学生选课-->
+    <update id="updateChoose" parameterType="updateChoose">
+        update choose set class_id = #{newClassId} where stu_id = #{stuId} and class_id = #{oldClassId}
+    </update>
+
+    <!--添加学生反馈-->
+    <update id="updateFeedback" parameterType="choose" >
+        update choose set feedback = 1 where stu_id = #{stuId} and class_id = #{classId}
+    </update>
+
+</mapper>

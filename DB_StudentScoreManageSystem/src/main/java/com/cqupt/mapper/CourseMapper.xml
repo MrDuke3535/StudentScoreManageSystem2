@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://www.mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.cqupt.mapper.CourseMapper">
+
+    <!--查询所有课程信息-->
+    <select id="getCourses" resultType="course">
+        select id,name from course
+    </select>
+
+    <!--添加课程-->
+    <insert id="addCourse" parameterType="course">
+        insert into course(id,name) values(#{id},#{name})
+    </insert>
+
+    <!--删除课程-->
+    <delete id="deleteCourse" parameterType="string">
+        delete from course where id = #{id}
+    </delete>
+
+    <!--修改课程-->
+    <update id="updateCourse" parameterType="course">
+        update course set name = #{name} where id = #{id}
+    </update>
+
+    <!--通过关键词（如课程号或课程名）获取课程信息-->
+    <select id="getCourseByKeyWord" parameterType="string" resultType="course">
+        select id,name from course where id = #{keyWord} or name like concat('%',#{keyWord},'%')
+    </select>
+
+    <!--通过关键词获取课程号-->
+    <select id="getIdByIdOrName" parameterType="string" resultType="string">
+        select id from course where id = #{course} or name = #{course}
+    </select>
+
+</mapper>

@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://www.mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.cqupt.mapper.ClassesMapper">
+
+    <!--通过教学班号查询教学班信息-->
+    <select id="queryClassById" parameterType="string" resultType="classes">
+        select DISTINCT
+        cl.id as classId,cl.course_id as courseId,co.name as courseName,t.name as teacher
+        from teacher t,classes cl,course co,choose c
+        where
+        co.id = cl.course_id and t.id = cl.teacher_id and t.id = #{id}
+    </select>
+
+    <!--通过课程号获取所有教学班信息-->
+    <select id="getClassByCourseId" parameterType="string" resultType="adminClass">
+        select
+        c.id as classId,c.teacher_id as teacherId,t.name as teacherName
+        from classes c,teacher t
+        where
+        c.course_id = #{courseId} and c.teacher_id = t.id
+    </select>
+
+    <!--增加教学班-->
+    <insert id="addClasses" parameterType="classes">
+        insert into classes(id,course_id,teacher_id) values(#{classId},#{courseId},#{teacher})
+    </insert>
+
+    <!--删除教学班-->
+    <delete id="deleteClassesById" parameterType="string">
+        delete from classes where id = #{id}
+    </delete>
+
+    <!--修改教学班信息-->
+    <update id="updateClasses" parameterType="classes">
+        update classes set teacher_id = #{teacher} where id = #{classId}
+    </update>
+
+    <!--通过教学班号获取教学班信息-->
+    <select id="getCourseIdByKeyWord" parameterType="string" resultType="adminClass">
+        select
+        c.id as classId,c.teacher_id as teacherId,t.name as teacherName,c.course_id as courseId
+        from classes c,teacher t
+        where
+        c.id = #{courseId} and c.teacher_id = t.id
+    </select>
+
+</mapper>

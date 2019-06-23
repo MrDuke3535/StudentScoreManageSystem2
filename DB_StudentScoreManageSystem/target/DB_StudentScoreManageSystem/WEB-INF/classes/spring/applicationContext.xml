@@ -1,0 +1,83 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:aop="http://www.springframework.org/schema/aop"
+       xmlns:tx="http://www.springframework.org/schema/tx"
+       xmlns:context="http://www.springframework.org/schema/context"
+       xmlns:mvc="http://www.springframework.org/schema/mvc"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans
+	http://www.springframework.org/schema/beans/spring-beans-4.0.xsd
+	http://www.springframework.org/schema/aop
+	http://www.springframework.org/schema/aop/spring-aop-4.0.xsd
+	http://www.springframework.org/schema/tx
+	http://www.springframework.org/schema/tx/spring-tx-4.0.xsd
+	http://www.springframework.org/schema/context
+	http://www.springframework.org/schema/context/spring-context-4.0.xsd
+	http://www.springframework.org/schema/mvc
+	http://www.springframework.org/schema/mvc/spring-mvc-4.0.xsd">
+
+    <bean id="dateSource" class="org.apache.commons.dbcp.BasicDataSource">
+        <property name="driverClassName" value="com.mysql.cj.jdbc.Driver"/>
+        <property name="url" value="jdbc:mysql://127.0.0.1:3306/dbssms?serverTimezone=UTC&amp;charcaterEncoding=utf8&amp;useUincode=true&amp;useSSL=false"/>
+        <property name="username" value="root"/>
+        <property name="password" value="980912"/>
+        <property name="maxIdle" value="5"/>
+        <property name="maxActive" value="255" />
+        <property name="maxWait" value="10000"/>
+    </bean>
+
+    <bean id="sqlSessionFactory" class="org.mybatis.spring.SqlSessionFactoryBean">
+        <property name="configLocation" value="classpath:mybatis/Configuration.xml" />
+        <property name="dataSource" ref="dateSource"/>
+    </bean>
+
+    <bean id="transactionManager" class="org.springframework.jdbc.datasource.DataSourceTransactionManager">
+        <property name="dataSource" ref="dateSource"/>
+    </bean>
+
+    <bean class="org.mybatis.spring.mapper.MapperScannerConfigurer">
+        <property name="basePackage" value="com.cqupt.*"/>
+        <property name="sqlSessionFactoryBeanName" value="sqlSessionFactory"/>
+        <property name="annotationClass" value="org.springframework.stereotype.Repository"/>
+    </bean>
+
+    <!--<bean id="userService" class="com.cqupt.service.impl.UserServiceImpl"></bean>-->
+
+    <!-- google kaptcha的相关配置-->
+    <bean id="captchaProducer" class="com.google.code.kaptcha.impl.DefaultKaptcha">
+        <property name="config">
+            <bean class="com.google.code.kaptcha.util.Config">
+                <!--通过构造函数注入属性值 -->
+                <constructor-arg type="java.util.Properties">
+                    <props>
+                        <!-- 验证码宽度 -->
+                        <prop key="kaptcha.image.width">100</prop>
+                        <!-- 验证码高度 -->
+                        <prop key="kaptcha.image.height">40</prop>
+                        <!-- 生成验证码内容范围 -->
+                        <prop key="kaptcha.textproducer.char.string">0123456789</prop>
+                        <!-- 验证码个数 -->
+                        <prop key="kaptcha.textproducer.char.length">4</prop>
+                        <!-- 是否有边框 -->
+                        <prop key="kaptcha.border">yes</prop>
+                        <!-- 边框颜色 -->
+                        <prop key="kaptcha.border.color">105,179,90</prop>
+                        <!-- 边框厚度 -->
+                        <prop key="kaptcha.border.thickness">1</prop>
+                        <!-- 验证码字体颜色 -->
+                        <prop key="kaptcha.textproducer.font.color">red</prop>
+                        <!-- 验证码字体大小 -->
+                        <prop key="kaptcha.textproducer.font.size">40</prop>
+                        <!-- 验证码所属字体样式 -->
+                        <prop key="kaptcha.textproducer.font.names">BKamrnBd</prop>
+                        <!-- 干扰线颜色 -->
+                        <prop key="kaptcha.noise.color">blue</prop>
+                        <!-- 验证码文本字符间距 -->
+                        <prop key="kaptcha.textproducer.char.space">3</prop>
+                    </props>
+                </constructor-arg>
+            </bean>
+        </property>
+    </bean>
+
+</beans>
